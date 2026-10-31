@@ -12,3 +12,4 @@
 # Tableau workbooks (published on Tableau Public instead)
 *.twb
 *.twbx
+logs/
