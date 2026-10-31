@@ -131,6 +131,25 @@ The raw tables are reorganized into a star schema in a separate `mart` schema, b
 - Partial months (before Jan 2017 and after Aug 2018) are excluded; comparing them with full months
   would show fake jumps and a fake collapse.
   Query: `sql/q1_revenue_trend.sql`, steps 2–3.
+### 2. Categories: revenue and reviews
+- 72 categories have revenue (71 named plus "unknown"); the top 10 bring **62.4%** of it
+  (8.42M of 13.49M). Health & beauty leads with 9.3%, followed by watches & gifts (8.9%)
+  and bed, bath & table (7.7%).
+- The platform average review score is **4.12** (one review per order).
+- Among the top 10, **bed, bath & table rates lowest at 3.97** (9,295 reviewed orders),
+  0.15 below average; furniture & decor follows at 4.02. Together they bring 13.1% of revenue.
+- The best-rated categories are small: books (general interest 4.50, technical 4.40),
+  construction tools (4.43) and food & drink (4.40); none of them is in the top 10 by revenue.
+- The lowest-rated are office furniture (3.62, 1,262 reviewed orders), men's clothing (3.73)
+  and audio (3.84). Furniture and home categories cluster near the bottom: home comfort 3.86,
+  home construction and bed, bath & table 3.97, furniture & decor 4.02. Whether bulky items
+  arrive late more often (see finding 4) is a hypothesis this data suggests, not something it shows.
+- Products without a category ("unknown", 1,445 reviewed orders) also rate below average (3.93),
+  so the missing category data hides a weak spot rather than a neutral one.
+- Assumptions: categories with fewer than 50 reviewed orders are left out (59 of 72 remain);
+  an order with items from two categories counts once in each; canceled and unavailable
+  orders are excluded from both revenue and reviews.
+  Query: `sql/q2_categories.sql`.
 ### 3. Repeat customers
 - Only **3.0%** of customers come back: 2,888 of 94,990 placed more than one order
   (canceled and unavailable orders excluded). Most repeat customers ordered just twice (2,652).
@@ -172,14 +191,15 @@ The raw tables are reorganized into a star schema in a separate `mart` schema, b
 
 ## Status
 In progress, started October 2026. Done: the star schema with two fact tables and model tests,
-questions 1, 3, 4 and 5 (see Key findings) and two Tableau dashboards. Money columns were converted
-from float to numeric for exact totals. Next: question 2, rebuilding the star schema as tested
+all five business questions (see Key findings) and two Tableau dashboards. Money columns were
+converted from float to numeric for exact totals. Next: rebuilding the star schema as tested
 dbt models, and a Power BI version of the dashboards.
 
 ## Repo contents
 - `setup.md`: how the database was set up, the data loaded, and the money column type fix.
 - `sql/`: the project.
   - `01_star_schema.sql`: builds the star schema (4 dimensions, 2 fact tables) in the `mart` schema and tests it.
+  - `q2_categories.sql`: revenue share and average review score per category (CTEs, window share of total); answers question 2.
   - `q1_revenue_trend.sql`: window functions (SUM() OVER, LAG, running totals, RANK vs. ROW_NUMBER); answers question 1.
   - `q3_repeat_customers.sql`: subqueries and chained CTEs; answers question 3.
   - `q4_late_deliveries.sql`: late deliveries by state and their effect on reviews; answers question 4.
