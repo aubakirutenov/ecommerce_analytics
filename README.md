@@ -26,7 +26,7 @@ PostgreSQL, SQL, DBeaver, Tableau, Excel (pivot tables), Git
 - Customer: one person, identified by customer_unique_id, because customer_id changes with every order.
 - Repeat customer: a customer with more than one order, counting only orders that are not canceled or unavailable (the same filter as order volume).
 - Late order: a delivered order whose actual delivery date is after its estimated delivery date. Orders with status delivered but no delivery date (8) are excluded.
-- Review score: the 1-5 score in order_reviews. Category averages only include categories with at least 50 reviews.
+- Review score: the 1-5 score in order_reviews. Category averages only include categories with at least 50 reviewed orders.
 - Top 10% of sellers: the 3,053 sellers with revenue are ranked by total revenue and split into
   10 equal groups (NTILE); the top group holds 306 sellers. 42 of the 3,095 sellers are not ranked
   because all their orders were canceled or unavailable, so they have no revenue.
@@ -168,8 +168,8 @@ The raw tables are reorganized into a star schema in a separate `mart` schema, b
   12.1% on 12,350 orders, almost three times SP's 4.5%.
 - Late orders get much worse reviews: **2.27 stars vs. 4.29** for on-time orders, a drop of about 2 stars
   (based on 6,381 and 89,443 reviewed orders).
-- Delivery is therefore a direct driver of customer satisfaction; improving RJ and the northeast
-  would affect the most customers.
+- Late delivery is strongly associated with lower satisfaction; improving RJ and the northeast
+     would affect the most customers.
   Query: `sql/q4_late_deliveries.sql`, built on `mart.fact_orders`.
 ### 5. Top 10% of sellers
 - The top 10% of sellers (306) bring **67.5%** of revenue (9.11M of 13.49M, all months);
@@ -199,8 +199,8 @@ dbt models, and a Power BI version of the dashboards.
 - `setup.md`: how the database was set up, the data loaded, and the money column type fix.
 - `sql/`: the project.
   - `01_star_schema.sql`: builds the star schema (4 dimensions, 2 fact tables) in the `mart` schema and tests it.
-  - `q2_categories.sql`: revenue share and average review score per category (CTEs, window share of total); answers question 2.
   - `q1_revenue_trend.sql`: window functions (SUM() OVER, LAG, running totals, RANK vs. ROW_NUMBER); answers question 1.
+  - `q2_categories.sql`: revenue share and average review score per category (CTEs, window share of total); answers question 2.
   - `q3_repeat_customers.sql`: subqueries and chained CTEs; answers question 3.
   - `q4_late_deliveries.sql`: late deliveries by state and their effect on reviews; answers question 4.
   - `q5_top_sellers.sql`: seller revenue deciles with NTILE; answers question 5.
