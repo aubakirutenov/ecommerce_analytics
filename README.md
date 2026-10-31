@@ -204,5 +204,5 @@ dbt models, and a Power BI version of the dashboards.
   - `q3_repeat_customers.sql`: subqueries and chained CTEs; answers question 3.
   - `q4_late_deliveries.sql`: late deliveries by state and their effect on reviews; answers question 4.
   - `q5_top_sellers.sql`: seller revenue deciles with NTILE; answers question 5.
-- `practice/`: SQL exercises written while learning (basics, joins, dates, drills and CTEs; `round1` and `round2` are two rounds of the same topic).
+- `practice/`: SQL exercises written while learning (basics, joins, dates, drills, CTEs, UNION, string functions and EXPLAIN).
 - `.gitignore`: keeps system, Excel and data files out of the repo.
