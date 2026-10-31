@@ -20,9 +20,10 @@ Built on a tested star schema in PostgreSQL; details in [Key findings](#key-find
 PostgreSQL, SQL, DBeaver, Tableau, Excel (pivot tables), Git
 
 ## Dashboards
-[Olist revenue overview](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistrevenueoverview)
+- [Olist revenue overview](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistrevenueoverview)
+- [Olist delivery and reviews](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistdeliveryandreviews) (screenshot below)
 
-[Olist delivery and reviews](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistdeliveryandreviews)
+<a href="https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistdeliveryandreviews"><img width="1202" alt="Olist delivery and reviews dashboard" src="https://github.com/user-attachments/assets/4abed31c-7392-4262-8a5c-5d74def9a877" /></a>
 
 ## Business questions
 1. How did monthly revenue and order volume change over time, and when did they peak?
