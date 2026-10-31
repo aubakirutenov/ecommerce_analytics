@@ -4,7 +4,7 @@ An end-to-end analysis of an e-commerce dataset (orders, customers, products, pa
 
 ## Key results
 - **Late delivery goes with poor reviews:** late orders average **2.27 stars vs. 4.29** for on-time ones,
-  and the late share ranges from 4% to 14% by state, worst in the northeast and RJ.
+  and the late share ranges from 4% to 14% across the large states, worst in the northeast and RJ.
 - **Revenue is concentrated:** the top 10% of sellers bring **67.5%** of revenue, and the top 10
   of 72 categories bring 62.4%.
 - **Customers rarely return:** only **3.0%** order a second time, in every large state alike.
@@ -213,7 +213,7 @@ dbt models, and a Power BI version of the dashboards.
   - `q1_revenue_trend.sql`: window functions (SUM() OVER, LAG, running totals, RANK vs. ROW_NUMBER); answers question 1.
   - `q2_categories.sql`: revenue share and average review score per category (CTEs, window share of total); answers question 2.
   - `q3_repeat_customers.sql`: subqueries and chained CTEs; answers question 3.
-  - `q4_late_deliveries.sql`: late deliveries by state and their effect on reviews; answers question 4.
+  - `q4_late_deliveries.sql`: late deliveries by state and how they relate to reviews; answers question 4.
   - `q5_top_sellers.sql`: seller revenue deciles with NTILE; answers question 5.
 - `practice/`: SQL exercises written while learning (basics, joins, dates, drills, CTEs, UNION, string functions and EXPLAIN).
 - `.gitignore`: keeps system, Excel and data files out of the repo.
