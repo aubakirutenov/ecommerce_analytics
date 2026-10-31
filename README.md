@@ -2,6 +2,17 @@
 
 An end-to-end analysis of an e-commerce dataset (orders, customers, products, payments). I load the raw data into PostgreSQL, answer business questions with SQL, model the data as a star schema, and present the findings in interactive Tableau dashboards.
 
+## Key results
+- **Late delivery goes with poor reviews:** late orders average **2.27 stars vs. 4.29** for on-time ones,
+  and the late share ranges from 4% to 14% by state, worst in the northeast and RJ.
+- **Revenue is concentrated:** the top 10% of sellers bring **67.5%** of revenue, and the top 10
+  of 72 categories bring 62.4%.
+- **Customers rarely return:** only **3.0%** order a second time, in every large state alike.
+- **The biggest categories are not the best rated:** bed, bath & table (#3 by revenue) rates 3.97
+  against a 4.12 average, while the best-rated categories (books, food & drink) are small.
+
+Built on a tested star schema in PostgreSQL; details in [Key findings](#key-findings).
+
 ## Dataset
 [Brazilian E-Commerce Public Dataset by Olist (Kaggle)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce): 99,441 orders placed from September 2016 to October 2018, in 9 CSV files.
 
