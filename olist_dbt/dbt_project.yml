@@ -34,3 +34,5 @@ models:
       # Staging models: one per source table, built as views
     staging:
       +materialized: view
+    marts:
+      +materialized: table
