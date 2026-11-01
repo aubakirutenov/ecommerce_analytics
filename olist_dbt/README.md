@@ -1,15 +1,18 @@
-Welcome to your new dbt project!
+# olist_dbt
 
-### Using the starter project
+The dbt Core project behind the [E-commerce Analytics](../README.md) portfolio project. It rebuilds the Olist star schema in PostgreSQL from the raw tables, in two layers:
 
-Try running the following commands:
-- dbt run
-- dbt test
+- `models/staging/`: one view per raw table (7), with renamed columns and fixed types.
+- `models/marts/`: the star schema as tables: `dim_customer`, `dim_seller`, `dim_product`, `dim_date`, `fact_orders`, `fact_order_items`.
 
+45 tests check keys, relationships between facts and dimensions, and accepted values. The marts match the original SQL build to the cent; see the [dbt pipeline](../README.md#dbt-pipeline) section of the main README.
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+## Run
+
+Requires dbt Core with the Postgres adapter and a profile named `olist_dbt` in `~/.dbt/profiles.yml` that points to the database with the `olist` schema.
+
+```bash
+dbt build          # build all models and run all tests
+dbt docs generate  # documentation and lineage graph
+dbt docs serve
+```

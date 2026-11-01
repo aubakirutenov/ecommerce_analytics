@@ -1,6 +1,6 @@
 # E-commerce Analytics
 
-An end-to-end analysis of an e-commerce dataset (orders, customers, products, payments). I load the raw data into PostgreSQL, answer business questions with SQL, model the data as a star schema, and present the findings in interactive Tableau dashboards.
+An end-to-end analysis of an e-commerce dataset (orders, customers, products, payments). I load the raw data into PostgreSQL, answer business questions with SQL, model the data as a star schema, rebuild it as tested dbt models, and present the findings in interactive Tableau dashboards.
 
 ## Key results
 - **Late delivery goes with poor reviews:** late orders average **2.27 stars vs. 4.29** for on-time ones,
@@ -11,13 +11,13 @@ An end-to-end analysis of an e-commerce dataset (orders, customers, products, pa
 - **The biggest categories are not the best rated:** bed, bath & table (#3 by revenue) rates 3.97
   against a 4.12 average, while the best-rated categories (books, food & drink) are small.
 
-Built on a tested star schema in PostgreSQL; details in [Key findings](#key-findings).
+Built on a star schema in PostgreSQL, rebuilt in dbt with 45 tests; details in [Key findings](#key-findings) and [dbt pipeline](#dbt-pipeline).
 
 ## Dataset
 [Brazilian E-Commerce Public Dataset by Olist (Kaggle)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce): 99,441 orders placed from September 2016 to October 2018, in 9 CSV files.
 
 ## Tools
-PostgreSQL, SQL, DBeaver, Tableau, Excel (pivot tables), Git
+PostgreSQL, SQL, dbt Core, DBeaver, Tableau, Excel (pivot tables), Git
 
 ## Dashboards
 - [Olist revenue overview](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistrevenueoverview)
@@ -121,7 +121,8 @@ erDiagram
        numeric review_score
    }
 ```
-The raw tables are reorganized into a star schema in a separate `mart` schema, built by `sql/01_star_schema.sql`.
+
+The raw tables are reorganized into a star schema in a separate `mart` schema, first built by `sql/01_star_schema.sql` and then rebuilt as dbt models (see [dbt pipeline](#dbt-pipeline)).
 
 - **Grain:** one row of `fact_order_items` is one order item (order_id + order_item_id), because price and seller belong to the item, not the order.
 - **Measures:** price and freight_value.
@@ -131,6 +132,37 @@ The raw tables are reorganized into a star schema in a separate `mart` schema, b
 - Products without an English category are labeled "unknown" (623 products).
 - **Tests:** every dimension key is unique, no fact row is orphaned (0 for all four dimensions), joining the fact to all dimensions keeps all 112,650 rows, and revenue matches the earlier analysis to the cent (13,494,400.74).
 - **fact_orders** is a second fact table at order grain (99,441 rows) for delivery and reviews, which belong to the order, not the item. It shares dim_customer and dim_date with fact_order_items (a fact constellation). Reviews are averaged per order (some orders have several).
+
+## dbt pipeline
+The star schema is rebuilt with dbt Core in `olist_dbt/`, so the SQL is version-controlled, tested and documented, and the build order is worked out from the dependencies.
+
+![dbt lineage graph: sources, staging models and marts](images/dbt_lineage.png)
+
+- **Sources (7):** the raw Olist tables in the `olist` schema, declared in `_sources.yml`.
+- **Staging (7 views):** one model per source table, with the same row count. Only renaming and type fixes:
+  timestamps get an `_at` suffix (`order_delivered_customer_date` holds a timestamp, so it becomes
+  `delivered_at`), and `review_score` is explicitly cast to integer. No joins and no business logic.
+- **Marts (6 tables):** the four dimensions and two fact tables of the star schema, built from staging
+  with `ref()`. Business logic lives here: the late-delivery flag, the average review per order and the
+  "unknown" category.
+- **Tests (45):** every key is unique and not null, every fact row finds its dimension row
+  (relationships tests replace the manual orphan checks), `is_late` and `review_score` only take
+  valid values, and a custom test checks that no order repeats an item number.
+- **Validation:** the dbt marts match the original `mart` tables: the same row counts
+  (99,441 orders, 112,650 items) and the same revenue to the cent (13,494,400.74).
+- **A test found a data quality issue:** 13 products have a Portuguese category that is missing from
+  the translation table. The test is set to warn, not fail; these products are labeled "unknown" in
+  `dim_product` and counted in the Data quality notes above.
+- `review_id` is not unique in the source data (the same review appears on several orders),
+  so it has no unique test; tests follow the real grain of the data.
+
+Run it (with a dbt profile for the local PostgreSQL database in `~/.dbt/profiles.yml`):
+```bash
+cd olist_dbt
+dbt build            # builds all models and runs all tests in dependency order
+dbt docs generate    # documentation and the lineage graph
+dbt docs serve
+```
 
 ## Key findings
 ### 1. Revenue trend
@@ -203,9 +235,9 @@ The raw tables are reorganized into a star schema in a separate `mart` schema, b
 
 ## Status
 In progress, started October 2026. Done: the star schema with two fact tables and model tests,
-all five business questions (see Key findings) and two Tableau dashboards. Money columns were
-converted from float to numeric for exact totals. Next: rebuilding the star schema as tested
-dbt models, and a Power BI version of the dashboards.
+all five business questions (see Key findings), two Tableau dashboards, and the star schema
+rebuilt as dbt models with 45 tests. Money columns were converted from float to numeric for
+exact totals. Next: a Power BI version of the dashboards built on the dbt marts.
 
 ## Repo contents
 - `setup.md`: how the database was set up, the data loaded, and the money column type fix.
@@ -216,5 +248,10 @@ dbt models, and a Power BI version of the dashboards.
   - `q3_repeat_customers.sql`: subqueries and chained CTEs; answers question 3.
   - `q4_late_deliveries.sql`: late deliveries by state and how they relate to reviews; answers question 4.
   - `q5_top_sellers.sql`: seller revenue deciles with NTILE; answers question 5.
+- `olist_dbt/`: the dbt project.
+  - `models/staging/`: sources, 7 staging models and their tests.
+  - `models/marts/`: the star schema (4 dimensions, 2 fact tables) and its tests.
+  - `tests/`: custom (singular) tests.
+- `images/`: the dbt lineage graph.
 - `practice/`: SQL exercises written while learning (basics, joins, dates, drills, CTEs, UNION, string functions and EXPLAIN).
 - `.gitignore`: keeps system, Excel and data files out of the repo.
