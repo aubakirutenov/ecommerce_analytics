@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: olist
+    schema: olist
+    tables:
+      - name: orders
+      - name: sellers
+      - name: customers
+      - name: products
+      - name: order_items
+      - name: product_category_translation
+      - name: order_reviews
