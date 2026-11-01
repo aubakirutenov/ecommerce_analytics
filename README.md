@@ -140,8 +140,9 @@ The star schema is rebuilt with dbt Core in `olist_dbt/`, so the SQL is version-
 
 - **Sources (7):** the raw Olist tables in the `olist` schema, declared in `_sources.yml`.
 - **Staging (7 views):** one model per source table, with the same row count. Only renaming and type fixes:
-  timestamps get an `_at` suffix (`order_delivered_customer_date` holds a timestamp, so it becomes
-  `delivered_at`), and `review_score` is explicitly cast to integer. No joins and no business logic.
+  the order timestamps, loaded as text, are cast to `timestamp` and get an `_at` suffix
+  (`order_delivered_customer_date` holds a date and time, so it becomes `delivered_at`), and
+  `review_score` is explicitly cast to integer. No joins and no business logic.
 - **Marts (6 tables):** the four dimensions and two fact tables of the star schema, built from staging
   with `ref()`. Business logic lives here: the late-delivery flag, the average review per order and the
   "unknown" category.
