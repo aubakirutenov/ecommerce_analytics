@@ -31,7 +31,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   olist_dbt:
-      # Staging models: one per source table, built as views
+        # Staging models: one per source table, built as views
     staging:
       +materialized: view
     marts:
