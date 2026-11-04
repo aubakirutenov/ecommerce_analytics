@@ -54,6 +54,7 @@ PostgreSQL, SQL, dbt Core, DBeaver, Tableau, Excel (pivot tables), Git
 
 ### Data quality
 - 8 orders are marked delivered but have no delivery date. They are excluded from late-delivery analysis.
+- 8 orders (5 created, 2 invoiced, 1 shipped) have no order items in the source data.
 - 1,627 of 112,650 items (1.4%) have no English category name: 1,603 have no category at all, and 24 have a Portuguese category missing from the translation table. They are kept and labeled "unknown".
 - 1 delivered order (placed 2016-09-15, 3 items, 134.97) has no payment record, likely a gap from the platform's first weeks. Revenue is based on item prices, so it is still counted.
 - 768 orders (about 0.8%) have no review.
