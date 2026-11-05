@@ -1,6 +1,6 @@
 # E-commerce Analytics
 
-An end-to-end analysis of an e-commerce dataset (orders, customers, products, payments). I load the raw data into PostgreSQL, answer business questions with SQL, model the data as a star schema, rebuild it as tested dbt models, and present the findings in interactive Tableau dashboards.
+An end-to-end analysis of an e-commerce dataset (orders, customers, products, payments). I load the raw data into PostgreSQL, answer business questions with SQL, model the data as a star schema, rebuild it as tested dbt models, and present the findings in interactive Power BI and Tableau dashboards.
 
 ## Key results
 - **Late delivery goes with poor reviews:** late orders average **2.27 stars vs. 4.29** for on-time ones,
@@ -11,19 +11,19 @@ An end-to-end analysis of an e-commerce dataset (orders, customers, products, pa
 - **The biggest categories are not the best rated:** bed, bath & table (#3 by revenue) rates 3.97
   against a 4.12 average, while the best-rated categories (books, food & drink) are small.
 
-Built on a star schema in PostgreSQL, rebuilt in dbt with 45 tests; details in [Key findings](#key-findings) and [dbt pipeline](#dbt-pipeline).
+Built on a star schema in PostgreSQL, rebuilt in dbt with 45 tests and modeled in Power BI with DAX measures checked against SQL; details in [Key findings](#key-findings), [dbt pipeline](#dbt-pipeline) and [Power BI](#power-bi).
 
 ## Dataset
 [Brazilian E-Commerce Public Dataset by Olist (Kaggle)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce): 99,441 orders placed from September 2016 to October 2018, in 9 CSV files.
 
 ## Tools
-PostgreSQL, SQL, dbt Core, DBeaver, Tableau, Excel (pivot tables), Git
+PostgreSQL, SQL, dbt Core, DBeaver, Power BI (Power Query, DAX), Tableau, Excel (pivot tables), Git
 
 ## Dashboards
-- [Olist revenue overview](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistrevenueoverview)
-- [Olist delivery and reviews](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistdeliveryandreviews) (screenshot below)
+- **Power BI:** [Olist Delivery & Reviews](https://app.powerbi.com/view?r=eyJrIjoiMWQxMmI1ZjctMGYwNS00MTYzLWE0ODctMmQzNzZkOTRmNTVhIiwidCI6IjJiNTFhNGIzLTQ0M2YtNDQwNi04Y2E0LTE5MDU2YTc5YTQ0NCIsImMiOjh9) (screenshot below)
+- **Tableau:** [Olist revenue overview](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistrevenueoverview) and [Olist delivery and reviews](https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistdeliveryandreviews)
 
-<a href="https://public.tableau.com/app/profile/aubakirutenov/viz/OlistStarSchemaDashboard/Olistdeliveryandreviews"><img width="1202" alt="Olist delivery and reviews dashboard" src="https://github.com/user-attachments/assets/4abed31c-7392-4262-8a5c-5d74def9a877" /></a>
+<a href="https://app.powerbi.com/view?r=eyJrIjoiMWQxMmI1ZjctMGYwNS00MTYzLWE0ODctMmQzNzZkOTRmNTVhIiwidCI6IjJiNTFhNGIzLTQ0M2YtNDQwNi04Y2E0LTE5MDU2YTc5YTQ0NCIsImMiOjh9"><img width="1202" alt="Olist Delivery & Reviews dashboard in Power BI" src="images/powerbi_dashboard.png" /></a>
 
 ## Business questions
 1. How did monthly revenue and order volume change over time, and when did they peak?
@@ -166,6 +166,31 @@ dbt docs generate    # documentation and the lineage graph
 dbt docs serve
 ```
 
+## Power BI
+The dbt marts are modeled and visualized in the Power BI service (browser), in a semantic model with DAX measures and a [published dashboard](https://app.powerbi.com/view?r=eyJrIjoiMWQxMmI1ZjctMGYwNS00MTYzLWE0ODctMmQzNzZkOTRmNTVhIiwidCI6IjJiNTFhNGIzLTQ0M2YtNDQwNi04Y2E0LTE5MDU2YTc5YTQ0NCIsImMiOjh9).
+
+![Power BI model: two fact tables sharing the customer and date dimensions](images/powerbi_model.png)
+
+- **Data:** the six dbt marts are exported to CSV and loaded through Power Query into one semantic model.
+  The browser service cannot reach the local PostgreSQL database without a gateway, so CSV is the bridge.
+  Row counts are checked against the database after loading.
+- **Model:** two fact tables that share the customer and date dimensions, with six one-to-many,
+  single-direction relationships. There is no relationship between the two facts: it would give the
+  dimensions two paths to `fact_order_items`, and `fact_order_items` already carries its own customer and date.
+  `dim_date` is marked as the date table.
+- **Measures (DAX):** Revenue, Orders, Late % (delivered orders only), Avg review, Revenue % of total
+  (`CALCULATE` with `ALL`), and time intelligence: Revenue PY, YoY % and Revenue YTD.
+- **Checked against SQL:** every measure was compared with a SQL query before use, overall, by year and by month
+  (for example revenue 13,494,400.74, and YoY for March 2018 +166.34%).
+- **Partial periods:** YoY on the first and last months gives meaningless numbers (+298,859% in September 2017
+  against a nearly empty 2016, -100% in October 2018 where the data ends), so the revenue chart shows
+  January 2017 to August 2018 only.
+- **Small samples:** the state chart ranks only states with at least 100 orders, using a measure that returns
+  blank below that, so a state with a handful of orders cannot top the list by chance. This threshold is lower
+  than the 1,000 delivered orders used in finding 4, so smaller northeastern states such as AL (21.4% late) appear.
+- **Two order counts:** the Orders measure counts 98,207 orders, while the order items cover 98,199. The difference
+  is the 8 orders without items listed in the Data quality notes; each number states which definition it uses.
+
 ## Key findings
 ### 1. Revenue trend
 - Over the 20 full months (Jan 2017 – Aug 2018), revenue totals **13.45M**
@@ -237,9 +262,9 @@ dbt docs serve
 
 ## Status
 In progress, started October 2026. Done: the star schema with two fact tables and model tests,
-all five business questions (see Key findings), two Tableau dashboards, and the star schema
-rebuilt as dbt models with 45 tests. Money columns were converted from float to numeric for
-exact totals. Next: a Power BI version of the dashboards built on the dbt marts.
+all five business questions (see Key findings), two Tableau dashboards, the star schema
+rebuilt as dbt models with 45 tests, and a Power BI semantic model with DAX measures and a
+published dashboard. Money columns were converted from float to numeric for exact totals.
 
 ## Repo contents
 - `setup.md`: how the database was set up, the data loaded, and the money column type fix.
@@ -254,6 +279,6 @@ exact totals. Next: a Power BI version of the dashboards built on the dbt marts.
   - `models/staging/`: sources, 7 staging models and their tests.
   - `models/marts/`: the star schema (4 dimensions, 2 fact tables) and its tests.
   - `tests/`: custom (singular) tests.
-- `images/`: the dbt lineage graph.
+- `images/`: the dbt lineage graph, the Power BI model and the Power BI dashboard.
 - `practice/`: SQL exercises written while learning (basics, joins, dates, drills, CTEs, UNION, string functions and EXPLAIN).
 - `.gitignore`: keeps system, Excel and data files out of the repo.
