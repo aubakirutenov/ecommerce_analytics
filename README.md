@@ -266,10 +266,11 @@ The dbt marts are modeled and visualized in the Power BI service (browser), in a
   Tableau sheet: "Top sellers vs. the rest" (set of the top 306 sellers by revenue).
 
 ## Status
-In progress, started October 2026. Done: the star schema with two fact tables and model tests,
-all five business questions (see Key findings), two Tableau dashboards, the star schema
-rebuilt as dbt models with 45 tests, and a Power BI semantic model with DAX measures and a
-published dashboard. Money columns were converted from float to numeric for exact totals.
+Complete (October–November 2026). Built: the star schema with two fact tables and model tests,
+all five business questions (see Key findings), two Tableau dashboards, and the star schema
+rebuilt as dbt models with 45 tests, and a Power BI semantic model with DAX measures checked
+against SQL and a published dashboard. Money columns were converted from float to numeric
+for exact totals.
 
 ## Repo contents
 - `setup.md`: how the database was set up, the data loaded, and the money column type fix.
