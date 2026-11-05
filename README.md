@@ -13,6 +13,8 @@ An end-to-end analysis of an e-commerce dataset (orders, customers, products, pa
 
 Built on a star schema in PostgreSQL, rebuilt in dbt with 45 tests and modeled in Power BI with DAX measures checked against SQL; details in [Key findings](#key-findings), [dbt pipeline](#dbt-pipeline) and [Power BI](#power-bi).
 
+**Contents:** [Dashboards](#dashboards) · [Business questions](#business-questions) · [Definitions](#definitions) · [Data notes](#data-notes) · [Data model](#data-model) · [dbt pipeline](#dbt-pipeline) · [Power BI](#power-bi) · [Key findings](#key-findings) · [Repo contents](#repo-contents)
+
 ## Dataset
 [Brazilian E-Commerce Public Dataset by Olist (Kaggle)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce): 99,441 orders placed from September 2016 to October 2018, in 9 CSV files.
 
