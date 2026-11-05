@@ -192,6 +192,9 @@ The dbt marts are modeled and visualized in the Power BI service (browser), in a
   than the 1,000 delivered orders used in finding 4, so smaller northeastern states such as AL (21.4% late) appear.
 - **Two order counts:** the Orders measure counts 98,207 orders, while the order items cover 98,199. The difference
   is the 8 orders without items listed in the Data quality notes; each number states which definition it uses.
+- **Dashboard:** a customer state slicer, revenue growth for Jan–Aug 2018 vs 2017 (+138.28%)
+  and the review score mix: 53.7% of late orders are rated 1 star, against 6.6% of on-time orders
+  (average review per order, rounded; orders without a review are left out).
 
 ## Key findings
 ### 1. Revenue trend
